@@ -23,8 +23,8 @@ public class TaskConfigurationProperties {
             return allowMultipleTasks;
         }
 
-        public void setAllowMiltipleTasks(final boolean allowMiltipleTasks) {
-            this.allowMultipleTasks = allowMiltipleTasks;
+        public void setAllowMultipleTasks(final boolean allowMultipleTasks) {
+            this.allowMultipleTasks = allowMultipleTasks;
         }
     }
 }
