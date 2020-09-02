@@ -1,5 +1,6 @@
 package io.github.mat3e.model;
 
+import io.github.mat3e.model.event.TaskEvent;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
@@ -57,8 +58,9 @@ public class Task{
         return done;
     }
 
-    public void setDone(boolean done) {
-        this.done = done;
+    public TaskEvent toggle() {
+        this.done = !this.done;
+        return TaskEvent.changed(this);
     }
 
     public LocalDateTime getDeadline() {

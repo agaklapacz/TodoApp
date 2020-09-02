@@ -1,10 +1,10 @@
 package io.github.mat3e.controller;
 
-import io.github.mat3e.logic.TaskService;
 import io.github.mat3e.model.Task;
 import io.github.mat3e.model.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,15 +13,16 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/tasks")
 class TaskController {
     public static final Logger logger = LoggerFactory.getLogger(TaskController.class);
+    private final ApplicationEventPublisher eventPublisher;
     private final TaskRepository repository;
 
-    TaskController(final TaskRepository repository) {
+    TaskController(ApplicationEventPublisher eventPublisher, final TaskRepository repository) {
+        this.eventPublisher = eventPublisher;
         this.repository = repository;
     }
 
@@ -75,7 +76,9 @@ class TaskController {
         if(!repository.existsById(id)){
             return ResponseEntity.notFound().build();
         }
-        repository.findById(id).ifPresent(task -> task.setDone(!task.isDone()));
+        repository.findById(id)
+                .map(Task::toggle)
+                .ifPresent(eventPublisher::publishEvent);
         return ResponseEntity.noContent().build();
     }
 }
